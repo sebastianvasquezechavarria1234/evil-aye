@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import EvilEye from './EvilEye';
 
@@ -57,9 +57,17 @@ const PRESETS = [
   }
 ];
 
+const TABS = ['controls', 'info'];
+
 function App() {
   const [params, setParams] = useState(PRESETS[0]);
   const [activeTab, setActiveTab] = useState('controls');
+
+  // Refs for sliding indicators
+  const presetBtnRefs = useRef([]);
+  const [presetIndicatorStyle, setPresetIndicatorStyle] = useState({});
+  const tabBtnRefs = useRef([]);
+  const [tabIndicatorStyle, setTabIndicatorStyle] = useState({});
 
   const updateParam = (key, value) => {
     setParams((prev) => ({
@@ -72,38 +80,81 @@ function App() {
     setParams(preset);
   };
 
+  const resetCurrentPreset = () => {
+    const original = PRESETS.find(p => p.name === params.name) || PRESETS[0];
+    setParams(original);
+  };
+
+  // Preset selector sliding indicator position update
+  useEffect(() => {
+    const idx = PRESETS.findIndex(p => p.name === params.name);
+    if (idx !== -1) {
+      const el = presetBtnRefs.current[idx];
+      if (el) {
+        const parent = el.parentElement;
+        if (parent) {
+          const parentRect = parent.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+          setPresetIndicatorStyle({
+            top: elRect.top - parentRect.top,
+            left: elRect.left - parentRect.left,
+            width: elRect.width,
+            height: elRect.height,
+          });
+        }
+      }
+    }
+  }, [params.name]);
+
+  // Tab selector sliding indicator position update
+  useEffect(() => {
+    const idx = TABS.indexOf(activeTab);
+    if (idx !== -1) {
+      const el = tabBtnRefs.current[idx];
+      if (el) {
+        const parent = el.parentElement;
+        if (parent) {
+          const parentRect = parent.getBoundingClientRect();
+          const elRect = el.getBoundingClientRect();
+          setTabIndicatorStyle({
+            top: elRect.top - parentRect.top,
+            left: elRect.left - parentRect.left,
+            width: elRect.width,
+            height: elRect.height,
+          });
+        }
+      }
+    }
+  }, [activeTab]);
+
   return (
-    <div className="h-screen bg-black text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
-
-      {/* Main Workspace */}
-      <main className="flex-grow w-full grid grid-cols-1 lg:grid-cols-12 items-stretch z-10 overflow-hidden">
-        {/* Left - Interactive Viewer */}
-        <div className="lg:col-span-9 flex flex-col relative min-h-0 justify-between">
-
-          {/* Interactive Container holding EvilEye component */}
-          <div className="w-full flex-grow relative flex items-center justify-center overflow-hidden my-8">
-            <div className="absolute top-4 left-4 z-20">
-              <span className="text-xs font-mono uppercase bg-black/80 border border-zinc-800 px-3 py-1.5 rounded-full text-zinc-400 backdrop-blur-md">
-                GL Canvas Live Preview
-              </span>
+    <div className="min-h-screen w-full bg-black text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200 select-none">
+      
+      {/* Main Grid Wrapper */}
+      <div className="w-full grid grid-cols-1 lg:grid-cols-[1fr_300px] min-h-screen">
+        
+        {/* Left - Interactive Canvas Play Area */}
+        <div className="flex flex-col relative h-[60vh] lg:h-screen min-w-0">
+          
+          <div className="relative flex-grow w-full bg-zinc-950/80 border border-zinc-900/40 overflow-hidden cursor-crosshair group flex items-center justify-center">
+            
+            {/* Custom Overlay with Active Preset & Reset Option */}
+            <div className="absolute top-0 left-0 right-0 z-[20] flex items-center justify-between px-4 py-4 bg-gradient-to-b from-zinc-950/80 to-transparent text-xs text-gray-400 pointer-events-none">
+              <div className="flex items-center gap-3 pointer-events-auto">
+                <span className="text-[10px] tracking-wider font-mono uppercase bg-black/80 border border-zinc-800/80 px-3 py-1.5 rounded-full text-zinc-400 backdrop-blur-md">
+                  GL Canvas Live Preview
+                </span>
+                <span className="px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-[10px]">Preset: {params.name}</span>
+              </div>
+              <button 
+                onClick={resetCurrentPreset}
+                className="hover:text-cyan-400 text-[10px] font-medium transition-colors cursor-pointer px-2.5 py-1 rounded bg-zinc-900/60 border border-zinc-800 hover:border-cyan-500/30 backdrop-blur-md pointer-events-auto"
+              >
+                Reset Preset
+              </button>
             </div>
 
-            <div className="absolute top-4 right-4 z-20 flex gap-2">
-              {PRESETS.map((preset) => (
-                <button
-                  key={preset.name}
-                  onClick={() => applyPreset(preset)}
-                  className={`text-xs px-2.5 py-1.5 rounded-md border font-medium transition-all ${
-                    params.name === preset.name
-                      ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400'
-                      : 'bg-black/50 border-zinc-800 text-zinc-400 hover:text-slate-200'
-                  }`}
-                >
-                  {preset.name.split(' ')[0]}
-                </button>
-              ))}
-            </div>
-
+            {/* WebGL Canvas */}
             <div className="w-full h-full absolute inset-0 flex items-center justify-center">
               <EvilEye
                 eyeColor={params.eyeColor}
@@ -118,43 +169,101 @@ function App() {
                 backgroundColor={params.backgroundColor}
               />
             </div>
-            <div className="absolute inset-0 border border-cyan-500/5 pointer-events-none rounded-lg bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+
+            {/* Grid Effect Background Overlay */}
+            <div className="absolute inset-0 border border-cyan-500/5 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+
+            {/* Help Indicator (Fades on hover) */}
+            <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center gap-3 transition-opacity duration-500 group-hover:opacity-0">
+              <div className="w-12 h-12 rounded-full border border-white/20 bg-white/10 flex items-center justify-center animate-bounce">
+                <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                </svg>
+              </div>
+              <p className="text-gray-400 text-sm font-light">
+                Move your mouse or swipe to interact
+              </p>
+              <span className="text-[10px] text-zinc-600 bg-zinc-900/50 px-2 py-1 rounded-full border border-zinc-800/30">
+                Procedural Eye Canvas
+              </span>
+            </div>
+
+            {/* Neon Border Highlights */}
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+            <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
           </div>
 
-          <div className="flex justify-between items-center text-xs text-zinc-500 border-t border-zinc-900 pt-4">
+          {/* Bottom Bar inside Play Area */}
+          <div className="flex justify-between items-center text-[10px] text-zinc-500 border-t border-zinc-900/60 px-4 py-3 bg-zinc-950/60 shrink-0">
             <p>Move mouse over the canvas to interact with the pupil</p>
             <p className="font-mono">OGL WebGL Renderer</p>
           </div>
         </div>
 
-        {/* Right - Control Panel */}
-        <div className="lg:col-span-3 flex flex-col bg-zinc-900/40 border-l border-zinc-800 overflow-hidden">
-          {/* Tabs */}
-          <div className="flex border-b border-zinc-800 bg-black/40">
-            <button
-              onClick={() => setActiveTab('controls')}
-              className={`flex-1 py-4 text-sm font-medium transition-all ${
-                activeTab === 'controls'
-                  ? 'border-b-2 border-cyan-400 text-cyan-400 bg-zinc-900/30'
-                  : 'text-zinc-400 hover:text-slate-200'
-              }`}
-            >
-              Control Parameters
-            </button>
-            <button
-              onClick={() => setActiveTab('presets')}
-              className={`flex-1 py-4 text-sm font-medium transition-all ${
-                activeTab === 'presets'
-                  ? 'border-b-2 border-cyan-400 text-cyan-400 bg-zinc-900/30'
-                  : 'text-zinc-400 hover:text-slate-200'
-              }`}
-            >
-              Presets & Shader Info
-            </button>
+        {/* Right - Premium Glassmorphic Sidebar */}
+        <div className="h-full flex flex-col gap-6 bg-zinc-900/60 backdrop-blur-xl border-l border-zinc-800/60 p-6 overflow-y-auto">
+          
+          {/* Section: Presets (Sliding Selector) */}
+          <div>
+            <h2 className="text-xs font-light text-white/70 mb-4 tracking-wider uppercase">Presets</h2>
+            <div className="relative flex flex-col gap-1">
+              <div
+                className="absolute rounded-lg bg-white/10 transition-all duration-500 pointer-events-none"
+                style={{ ...presetIndicatorStyle, transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+              />
+              {PRESETS.map((preset, i) => (
+                <button
+                  key={preset.name}
+                  ref={el => presetBtnRefs.current[i] = el}
+                  onClick={() => applyPreset(preset)}
+                  className={`relative w-full text-left px-3 py-2 rounded-lg text-xs font-normal transition-colors duration-300 cursor-pointer ${
+                    params.name === preset.name
+                      ? 'text-white font-medium'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>{preset.name}</span>
+                    <span 
+                      className="text-[9px] font-mono filter saturate-150" 
+                      style={{ color: preset.eyeColor }}
+                    >
+                      ● {preset.name.split(' ')[0]}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Settings scroll area */}
-          <div className="p-4 overflow-y-auto flex-grow space-y-4">
+          <div className="h-px bg-zinc-800/60" />
+
+          {/* Section: Tab Switcher */}
+          <div>
+            <div className="relative grid grid-cols-2 gap-1 bg-zinc-950/60 p-1 rounded-xl border border-zinc-800/50">
+              <div
+                className="absolute rounded-lg bg-white/10 transition-all duration-500 pointer-events-none"
+                style={{ ...tabIndicatorStyle, transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+              />
+              {TABS.map((tab, i) => (
+                <button
+                  key={tab}
+                  ref={el => tabBtnRefs.current[i] = el}
+                  onClick={() => setActiveTab(tab)}
+                  className={`relative px-2 py-1.5 rounded-lg text-xs font-normal transition-colors duration-300 text-center cursor-pointer ${
+                    activeTab === tab
+                      ? 'text-white'
+                      : 'text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  {tab === 'controls' ? 'Parameters' : 'Shader Info'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Dynamic Tab Content (Sliders or Info) */}
+          <div className="flex-grow min-h-0 relative">
             <AnimatePresence mode="wait">
               {activeTab === 'controls' ? (
                 <motion.div
@@ -163,247 +272,260 @@ function App() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 10 }}
                   transition={{ duration: 0.2 }}
-                  className="space-y-4"
+                  className="space-y-4 pr-1"
                 >
-                {/* Color Control */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <label className="text-sm font-medium text-slate-300">Iris Color</label>
-                    <span className="text-xs font-mono text-zinc-500">{params.eyeColor}</span>
-                  </div>
-                  <div className="flex gap-3 items-center">
-                    <input
-                      type="color"
-                      value={params.eyeColor}
-                      onChange={(e) => updateParam('eyeColor', e.target.value)}
-                      className="w-10 h-10 rounded border border-zinc-700 bg-transparent cursor-pointer"
-                    />
-                    <div className="flex gap-1.5 flex-wrap">
-                      {['#FF6F37', '#1E40AF', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6'].map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => updateParam('eyeColor', color)}
-                          className="w-6 h-6 rounded-full border border-zinc-800 hover:scale-110 transition-transform"
-                          style={{ backgroundColor: color }}
+                  {/* Colors Group */}
+                  <div className="space-y-3 bg-zinc-950/30 p-3 rounded-xl border border-zinc-800/40">
+                    
+                    {/* Iris Color */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[11px] font-medium text-zinc-400">Iris Color</label>
+                        <span className="text-[9px] font-mono text-zinc-500">{params.eyeColor}</span>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="color"
+                          value={params.eyeColor}
+                          onChange={(e) => updateParam('eyeColor', e.target.value)}
+                          className="w-7 h-7 rounded border border-zinc-800 bg-transparent cursor-pointer shrink-0"
                         />
-                      ))}
+                        <div className="flex gap-1 flex-wrap">
+                          {['#FF6F37', '#1E40AF', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6'].map((color) => (
+                            <button
+                              key={color}
+                              onClick={() => updateParam('eyeColor', color)}
+                              className="w-4 h-4 rounded-full border border-zinc-900 hover:scale-110 transition-transform cursor-pointer"
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Scale */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <label className="text-sm font-medium text-slate-300">Talisman Scale</label>
-                    <span className="text-xs font-mono text-cyan-400">{params.scale.toFixed(2)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.2"
-                    max="1.5"
-                    step="0.05"
-                    value={params.scale}
-                    onChange={(e) => updateParam('scale', Number(e.target.value))}
-                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                  />
-                </div>
-
-                {/* Intensity */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <label className="text-sm font-medium text-slate-300">Light Intensity</label>
-                    <span className="text-xs font-mono text-cyan-400">{params.intensity.toFixed(2)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="3.0"
-                    step="0.1"
-                    value={params.intensity}
-                    onChange={(e) => updateParam('intensity', Number(e.target.value))}
-                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                  />
-                </div>
-
-                {/* Pupil Size */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <label className="text-sm font-medium text-slate-300">Pupil Size</label>
-                    <span className="text-xs font-mono text-cyan-400">{params.pupilSize.toFixed(2)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.1"
-                    max="1.2"
-                    step="0.05"
-                    value={params.pupilSize}
-                    onChange={(e) => updateParam('pupilSize', Number(e.target.value))}
-                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                  />
-                </div>
-
-                {/* Iris Width */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <label className="text-sm font-medium text-slate-300">Iris Width</label>
-                    <span className="text-xs font-mono text-cyan-400">{params.irisWidth.toFixed(2)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.05"
-                    max="0.8"
-                    step="0.01"
-                    value={params.irisWidth}
-                    onChange={(e) => updateParam('irisWidth', Number(e.target.value))}
-                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                  />
-                </div>
-
-                {/* Glow Intensity */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <label className="text-sm font-medium text-slate-300">Glow Intensity</label>
-                    <span className="text-xs font-mono text-cyan-400">{params.glowIntensity.toFixed(2)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.0"
-                    max="1.5"
-                    step="0.05"
-                    value={params.glowIntensity}
-                    onChange={(e) => updateParam('glowIntensity', Number(e.target.value))}
-                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                  />
-                </div>
-
-                {/* Flame Speed */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <label className="text-sm font-medium text-slate-300">Flame / Noise Speed</label>
-                    <span className="text-xs font-mono text-cyan-400">{params.flameSpeed.toFixed(2)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.0"
-                    max="3.0"
-                    step="0.1"
-                    value={params.flameSpeed}
-                    onChange={(e) => updateParam('flameSpeed', Number(e.target.value))}
-                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                  />
-                </div>
-
-                {/* Noise Scale */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <label className="text-sm font-medium text-slate-300">Noise Distortion</label>
-                    <span className="text-xs font-mono text-cyan-400">{params.noiseScale.toFixed(2)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.1"
-                    max="3.0"
-                    step="0.1"
-                    value={params.noiseScale}
-                    onChange={(e) => updateParam('noiseScale', Number(e.target.value))}
-                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                  />
-                </div>
-
-                {/* Pupil Follow */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <label className="text-sm font-medium text-slate-300">Cursor Pupil Follow</label>
-                    <span className="text-xs font-mono text-cyan-400">{params.pupilFollow.toFixed(2)}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.0"
-                    max="2.0"
-                    step="0.1"
-                    value={params.pupilFollow}
-                    onChange={(e) => updateParam('pupilFollow', Number(e.target.value))}
-                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
-                  />
-                </div>
-
-                {/* Background color of shader */}
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <label className="text-sm font-medium text-slate-300">Canvas Inner BG</label>
-                    <span className="text-xs font-mono text-zinc-500">{params.backgroundColor}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      type="color"
-                      value={params.backgroundColor}
-                      onChange={(e) => updateParam('backgroundColor', e.target.value)}
-                      className="w-8 h-8 rounded border border-zinc-700 bg-transparent cursor-pointer"
-                    />
-                    <div className="flex gap-1.5">
-                      {['#000000', '#020617', '#090514', '#170f0f', '#022c22'].map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => updateParam('backgroundColor', color)}
-                          className="w-6 h-6 rounded border border-zinc-800 hover:scale-105"
-                          style={{ backgroundColor: color }}
+                    {/* Canvas Inner BG */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[11px] font-medium text-zinc-400">Canvas Inner BG</label>
+                        <span className="text-[9px] font-mono text-zinc-500">{params.backgroundColor}</span>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="color"
+                          value={params.backgroundColor}
+                          onChange={(e) => updateParam('backgroundColor', e.target.value)}
+                          className="w-7 h-7 rounded border border-zinc-800 bg-transparent cursor-pointer shrink-0"
                         />
-                      ))}
+                        <div className="flex gap-1 flex-wrap">
+                          {['#000000', '#020617', '#090514', '#170f0f', '#022c22'].map((color) => (
+                            <button
+                              key={color}
+                              onClick={() => updateParam('backgroundColor', color)}
+                              className="w-4 h-4 rounded border border-zinc-900 hover:scale-110 transition-transform cursor-pointer"
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
+
                   </div>
-                </div>
+
+                  {/* Sliders Group */}
+                  <div className="space-y-3.5">
+                    
+                    {/* Scale */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <label className="text-[11px] font-medium text-zinc-400">Talisman Scale</label>
+                        <span className="text-[10px] font-mono text-cyan-400">{params.scale.toFixed(2)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.2"
+                        max="1.5"
+                        step="0.05"
+                        value={params.scale}
+                        onChange={(e) => updateParam('scale', Number(e.target.value))}
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                      />
+                    </div>
+
+                    {/* Intensity */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <label className="text-[11px] font-medium text-zinc-400">Light Intensity</label>
+                        <span className="text-[10px] font-mono text-cyan-400">{params.intensity.toFixed(2)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.5"
+                        max="3.0"
+                        step="0.1"
+                        value={params.intensity}
+                        onChange={(e) => updateParam('intensity', Number(e.target.value))}
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                      />
+                    </div>
+
+                    {/* Pupil Size */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <label className="text-[11px] font-medium text-zinc-400">Pupil Size</label>
+                        <span className="text-[10px] font-mono text-cyan-400">{params.pupilSize.toFixed(2)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="1.2"
+                        step="0.05"
+                        value={params.pupilSize}
+                        onChange={(e) => updateParam('pupilSize', Number(e.target.value))}
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                      />
+                    </div>
+
+                    {/* Iris Width */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <label className="text-[11px] font-medium text-zinc-400">Iris Width</label>
+                        <span className="text-[10px] font-mono text-cyan-400">{params.irisWidth.toFixed(2)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.05"
+                        max="0.8"
+                        step="0.01"
+                        value={params.irisWidth}
+                        onChange={(e) => updateParam('irisWidth', Number(e.target.value))}
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                      />
+                    </div>
+
+                    {/* Glow Intensity */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <label className="text-[11px] font-medium text-zinc-400">Glow Intensity</label>
+                        <span className="text-[10px] font-mono text-cyan-400">{params.glowIntensity.toFixed(2)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="1.5"
+                        step="0.05"
+                        value={params.glowIntensity}
+                        onChange={(e) => updateParam('glowIntensity', Number(e.target.value))}
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                      />
+                    </div>
+
+                    {/* Flame Speed */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <label className="text-[11px] font-medium text-zinc-400">Flame Speed</label>
+                        <span className="text-[10px] font-mono text-cyan-400">{params.flameSpeed.toFixed(2)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="3.0"
+                        step="0.1"
+                        value={params.flameSpeed}
+                        onChange={(e) => updateParam('flameSpeed', Number(e.target.value))}
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                      />
+                    </div>
+
+                    {/* Noise Scale */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <label className="text-[11px] font-medium text-zinc-400">Noise Distortion</label>
+                        <span className="text-[10px] font-mono text-cyan-400">{params.noiseScale.toFixed(2)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="3.0"
+                        step="0.1"
+                        value={params.noiseScale}
+                        onChange={(e) => updateParam('noiseScale', Number(e.target.value))}
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                      />
+                    </div>
+
+                    {/* Pupil Follow */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between">
+                        <label className="text-[11px] font-medium text-zinc-400">Cursor Pupil Follow</label>
+                        <span className="text-[10px] font-mono text-cyan-400">{params.pupilFollow.toFixed(2)}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.0"
+                        max="2.0"
+                        step="0.1"
+                        value={params.pupilFollow}
+                        onChange={(e) => updateParam('pupilFollow', Number(e.target.value))}
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                      />
+                    </div>
+
+                  </div>
                 </motion.div>
-            ) : (
-              <motion.div
-                key="presets"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-4 text-sm text-slate-300 leading-relaxed"
-              >
-                <div>
-                  <h4 className="font-semibold text-slate-100 mb-2">Preset Configurations</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {PRESETS.map((preset) => (
-                      <button
-                        key={preset.name}
-                        onClick={() => applyPreset(preset)}
-                        className={`text-left p-3 rounded-lg border transition-all ${
-                          params.name === preset.name
-                            ? 'bg-cyan-950/20 border-cyan-500/50 text-cyan-200'
-                            : 'bg-black/40 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-slate-200'
-                        }`}
-                      >
-                        <p className="font-bold text-xs">{preset.name}</p>
-                        <p className="text-[10px] text-zinc-500 mt-1 font-mono">Color: {preset.eyeColor}</p>
-                      </button>
-                    ))}
+              ) : (
+                <motion.div
+                  key="info"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-4 text-xs text-slate-300 leading-relaxed pr-1"
+                >
+                  <div>
+                    <h4 className="font-semibold text-slate-100 mb-1">How It Works</h4>
+                    <p className="text-[11px] text-zinc-400">
+                      This component renders a custom WebGL fragment shader on a single triangle covering the viewport. The math models a procedural eye with fractal brownian motion (FBM) noise.
+                    </p>
                   </div>
-                </div>
+                  
+                  <div className="space-y-3">
+                    <div className="border-l border-zinc-800 pl-2.5">
+                      <h5 className="font-medium text-slate-200 mb-0.5 text-[11px]">Polar Mapping</h5>
+                      <p className="text-[10px] text-zinc-500">Converts planar coordinates into polar coordinates to map the iris fibers radially.</p>
+                    </div>
+                    
+                    <div className="border-l border-zinc-800 pl-2.5">
+                      <h5 className="font-medium text-slate-200 mb-0.5 text-[11px]">Procedural Noise</h5>
+                      <p className="text-[10px] text-zinc-500">A multi-octave Value Noise function running in pure GLSL generates the organic flame/fluid effect.</p>
+                    </div>
 
-                <div className="border-t border-zinc-900 pt-4">
-                  <h4 className="font-semibold text-slate-100 mb-2">How It Works</h4>
-                  <p className="text-xs text-zinc-400 mb-3">
-                    This component renders a custom WebGL fragment shader on a single triangle covering the viewport. The math models a procedural eye with fractal brownian motion (FBM) noise.
-                  </p>
-                  <ul className="text-xs text-zinc-400 list-disc pl-4 space-y-2">
-                    <li><strong>Polar Mapping:</strong> Converts planar coordinates into polar coordinates to map the iris fibers radially.</li>
-                    <li><strong>Procedural Noise:</strong> A multi-octave Value Noise function running in pure GLSL generates the organic flame/fluid effect.</li>
-                    <li><strong>Dynamic Uniforms:</strong> JavaScript feeds mouse coordinates, aspect ratios, and configuration values into the WebGL program in real time.</li>
-                  </ul>
-                </div>
+                    <div className="border-l border-zinc-800 pl-2.5">
+                      <h5 className="font-medium text-slate-200 mb-0.5 text-[11px]">Dynamic Uniforms</h5>
+                      <p className="text-[10px] text-zinc-500">JavaScript feeds mouse coordinates, aspect ratios, and configuration values into the WebGL program in real time.</p>
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
-        </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="w-full px-6 py-3 border-t border-zinc-900 text-center text-xs text-zinc-500 z-10 shrink-0">
-        <p>creado por <a href="https://sebas-dev.vercel.app/" target="_blank" rel="noreferrer" className="text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-2">sebastian vasquez echavarria</a></p>
-      </footer>
+          <div className="h-px bg-zinc-800/60" />
+
+          {/* Footer Copyright at Bottom */}
+          <div className="text-center text-[10px] text-zinc-600 italic underline underline-offset-4 shrink-0">
+            <a 
+              href="https://sebas-dev.vercel.app/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-zinc-400 transition-colors cursor-pointer"
+            >
+              Creado por Sebastián Vásquez Echavarría
+            </a>
+          </div>
+
+        </div>
+
+      </div>
     </div>
   );
 }
