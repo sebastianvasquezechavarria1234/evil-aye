@@ -183,6 +183,18 @@ function App() {
         {/* Right - Premium Glassmorphic Sidebar */}
         <div className="h-full flex flex-col gap-6 bg-zinc-900/60 backdrop-blur-xl border-l border-zinc-800/60 p-6 overflow-y-auto">
           
+          {/* Footer Copyright at Top */}
+          <div className="text-center text-[10px] text-zinc-600 italic underline underline-offset-4">
+            <a 
+              href="https://sebas-dev.vercel.app/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-zinc-400 transition-colors cursor-pointer"
+            >
+              Made by Sebastián Vásquez Echavarría
+            </a>
+          </div>
+
           {/* Section: Presets (Sliding Selector) */}
           <div>
             <h2 className="text-xs font-light text-white/70 mb-4 tracking-wider uppercase">Presets</h2>
@@ -486,25 +498,7 @@ function App() {
             </AnimatePresence>
           </div>
 
-          {/* Bottom Info */}
-          <div className="flex flex-col gap-0.5 text-left text-[10px] text-zinc-500">
-            <p>Move mouse over the canvas to interact with the pupil</p>
-            <p className="font-mono">OGL WebGL Renderer</p>
-          </div>
 
-          <div className="h-px bg-zinc-800/60" />
-
-          {/* Footer Copyright at Bottom */}
-          <div className="text-center text-[10px] text-zinc-600 italic underline underline-offset-4">
-            <a 
-              href="https://sebas-dev.vercel.app/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-zinc-400 transition-colors cursor-pointer"
-            >
-              Creado por Sebastián Vásquez Echavarría
-            </a>
-          </div>
 
         </div>
 
