@@ -75,21 +75,10 @@ function App() {
   return (
     <div className="h-screen bg-black text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
 
-      {/* Header */}
-      <header className="w-full px-6 py-4 flex items-center border-b border-zinc-900 z-10 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-600 via-blue-500 to-white flex items-center justify-center shadow-lg shadow-cyan-500/20">
-            <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
-              <div className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Workspace */}
       <main className="flex-grow w-full grid grid-cols-1 lg:grid-cols-12 items-stretch z-10 overflow-hidden">
         {/* Left - Interactive Viewer */}
-        <div className="lg:col-span-8 flex flex-col p-6 relative min-h-0 justify-between">
+        <div className="lg:col-span-9 flex flex-col p-6 relative min-h-0 justify-between">
 
           {/* Interactive Container holding EvilEye component */}
           <div className="w-full flex-grow relative flex items-center justify-center rounded-xl overflow-hidden my-8">
@@ -139,7 +128,7 @@ function App() {
         </div>
 
         {/* Right - Control Panel */}
-        <div className="lg:col-span-4 flex flex-col bg-zinc-900/40 border-l border-zinc-800 overflow-hidden">
+        <div className="lg:col-span-3 flex flex-col bg-zinc-900/40 border-l border-zinc-800 overflow-hidden">
           {/* Tabs */}
           <div className="flex border-b border-zinc-800 bg-black/40">
             <button
@@ -413,7 +402,7 @@ function App() {
 
       {/* Footer */}
       <footer className="w-full px-6 py-3 border-t border-zinc-900 text-center text-xs text-zinc-500 z-10 shrink-0">
-        <p>&copy; {new Date().getFullYear()} Evil Eye Laboratory. Developed using React + Vite + Tailwind CSS + OGL.</p>
+        <p>creado por <a href="https://sebas-dev.vercel.app/" target="_blank" rel="noreferrer" className="text-cyan-400 hover:text-cyan-300 transition-colors underline underline-offset-2">sebastian vasquez echavarria</a></p>
       </footer>
     </div>
   );
