@@ -209,11 +209,8 @@ function App() {
                 >
                   <div className="flex items-center justify-between">
                     <span>{preset.name}</span>
-                    <span 
-                      className="text-[9px] font-mono filter saturate-150" 
-                      style={{ color: preset.eyeColor }}
-                    >
-                      ● {preset.name.split(' ')[0]}
+                    <span className="text-[9px] font-mono text-white/80">
+                      <span style={{ color: preset.eyeColor }}>●</span> {preset.name.split(' ')[0]}
                     </span>
                   </div>
                 </button>
@@ -306,7 +303,7 @@ function App() {
                             <button
                               key={color}
                               onClick={() => updateParam('backgroundColor', color)}
-                              className="w-4 h-4 rounded border border-zinc-900 hover:scale-110 transition-transform cursor-pointer"
+                              className="w-4 h-4 rounded-full border border-zinc-900 hover:scale-110 transition-transform cursor-pointer"
                               style={{ backgroundColor: color }}
                             />
                           ))}
