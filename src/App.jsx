@@ -87,7 +87,7 @@ function App() {
               <div className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
             </div>
           </div>
-          <span className="text-lg font-bold tracking-wider bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+          <span className="text-lg font-bold tracking-wider bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent google-sans-flex">
             EVIL EYE LAB
           </span>
         </div>
