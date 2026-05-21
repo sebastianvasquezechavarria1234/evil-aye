@@ -128,13 +128,13 @@ function App() {
   }, [activeTab]);
 
   return (
-    <div className="min-h-screen w-full bg-black text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200 select-none">
+    <div className="h-screen w-full bg-black text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200 select-none overflow-hidden">
       
       {/* Main Grid Wrapper */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-[1fr_300px] min-h-screen">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-[1fr_300px] flex-1 min-h-0">
         
         {/* Left - Interactive Canvas Play Area */}
-        <div className="flex flex-col relative h-[60vh] lg:h-screen min-w-0">
+        <div className="flex flex-col relative h-[60vh] lg:h-full min-w-0">
           
           <div className="relative flex-grow w-full bg-zinc-950/80 border border-zinc-900/40 overflow-hidden cursor-crosshair group flex items-center justify-center">
             
@@ -240,7 +240,7 @@ function App() {
           </div>
 
           {/* Dynamic Tab Content (Sliders or Info) */}
-          <div className="flex-grow min-h-0 relative">
+          <div className="min-h-0 relative">
             <AnimatePresence mode="wait">
               {activeTab === 'controls' ? (
                 <motion.div
@@ -487,7 +487,7 @@ function App() {
           </div>
 
           {/* Bottom Info */}
-          <div className="flex flex-col gap-0.5 text-left text-[10px] text-zinc-500 shrink-0">
+          <div className="flex flex-col gap-0.5 text-left text-[10px] text-zinc-500">
             <p>Move mouse over the canvas to interact with the pupil</p>
             <p className="font-mono">OGL WebGL Renderer</p>
           </div>
@@ -495,7 +495,7 @@ function App() {
           <div className="h-px bg-zinc-800/60" />
 
           {/* Footer Copyright at Bottom */}
-          <div className="text-center text-[10px] text-zinc-600 italic underline underline-offset-4 shrink-0">
+          <div className="text-center text-[10px] text-zinc-600 italic underline underline-offset-4">
             <a 
               href="https://sebas-dev.vercel.app/" 
               target="_blank" 
