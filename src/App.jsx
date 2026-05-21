@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import EvilEye from './EvilEye';
 
 const PRESETS = [
@@ -75,58 +76,45 @@ function App() {
     <div className="h-screen bg-black text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
 
       {/* Header */}
-      <header className="w-full px-6 py-4 flex items-center justify-between border-b border-zinc-900 z-10 shrink-0">
+      <header className="w-full px-6 py-4 flex items-center border-b border-zinc-900 z-10 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-600 via-blue-500 to-white flex items-center justify-center shadow-lg shadow-cyan-500/20">
             <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
               <div className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
             </div>
           </div>
-          <span className="text-lg font-bold tracking-wider bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent google-sans-flex">
-            EVIL EYE LAB
-          </span>
-        </div>
-        <div className="flex gap-4 items-center">
-          <span className="text-xs text-zinc-500 font-mono">Shader Component loaded</span>
-          <a
-            href="https://www.reactbits.dev/backgrounds/evil-eye"
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs uppercase tracking-widest text-cyan-400 hover:text-cyan-300 transition-colors py-1.5 px-3 rounded-md bg-cyan-950/20 border border-cyan-800/30 backdrop-blur-sm"
-          >
-            ReactBits Source
-          </a>
         </div>
       </header>
 
       {/* Main Workspace */}
       <main className="flex-grow w-full grid grid-cols-1 lg:grid-cols-12 items-stretch z-10 overflow-hidden">
-        {/* Left 7 Columns - The Interactive Viewer */}
-        <div className="lg:col-span-7 flex flex-col p-6 relative min-h-0 justify-between">
-          <div className="absolute top-4 left-6 z-20">
-            <span className="text-xs font-mono uppercase bg-black/80 border border-zinc-800 px-3 py-1.5 rounded-full text-zinc-400 backdrop-blur-md">
-              GL Canvas Live Preview
-            </span>
-          </div>
-
-          <div className="absolute top-4 right-6 z-20 flex gap-2">
-            {PRESETS.map((preset) => (
-              <button
-                key={preset.name}
-                onClick={() => applyPreset(preset)}
-                className={`text-xs px-2.5 py-1.5 rounded-md border font-medium transition-all ${
-                  params.name === preset.name
-                    ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400'
-                    : 'bg-black/50 border-zinc-800 text-zinc-400 hover:text-slate-200'
-                }`}
-              >
-                {preset.name.split(' ')[0]}
-              </button>
-            ))}
-          </div>
+        {/* Left - Interactive Viewer */}
+        <div className="lg:col-span-8 flex flex-col p-6 relative min-h-0 justify-between">
 
           {/* Interactive Container holding EvilEye component */}
           <div className="w-full flex-grow relative flex items-center justify-center rounded-xl overflow-hidden my-8">
+            <div className="absolute top-4 left-4 z-20">
+              <span className="text-xs font-mono uppercase bg-black/80 border border-zinc-800 px-3 py-1.5 rounded-full text-zinc-400 backdrop-blur-md">
+                GL Canvas Live Preview
+              </span>
+            </div>
+
+            <div className="absolute top-4 right-4 z-20 flex gap-2">
+              {PRESETS.map((preset) => (
+                <button
+                  key={preset.name}
+                  onClick={() => applyPreset(preset)}
+                  className={`text-xs px-2.5 py-1.5 rounded-md border font-medium transition-all ${
+                    params.name === preset.name
+                      ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-400'
+                      : 'bg-black/50 border-zinc-800 text-zinc-400 hover:text-slate-200'
+                  }`}
+                >
+                  {preset.name.split(' ')[0]}
+                </button>
+              ))}
+            </div>
+
             <div className="w-full h-full absolute inset-0 flex items-center justify-center">
               <EvilEye
                 eyeColor={params.eyeColor}
@@ -150,8 +138,8 @@ function App() {
           </div>
         </div>
 
-        {/* Right 5 Columns - Control Panel */}
-        <div className="lg:col-span-5 flex flex-col bg-zinc-900/40 border-l border-zinc-800 overflow-hidden">
+        {/* Right - Control Panel */}
+        <div className="lg:col-span-4 flex flex-col bg-zinc-900/40 border-l border-zinc-800 overflow-hidden">
           {/* Tabs */}
           <div className="flex border-b border-zinc-800 bg-black/40">
             <button
@@ -177,9 +165,17 @@ function App() {
           </div>
 
           {/* Settings scroll area */}
-          <div className="p-6 overflow-y-auto flex-grow space-y-6">
-            {activeTab === 'controls' ? (
-              <div className="space-y-5">
+          <div className="p-4 overflow-y-auto flex-grow space-y-4">
+            <AnimatePresence mode="wait">
+              {activeTab === 'controls' ? (
+                <motion.div
+                  key="controls"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-4"
+                >
                 {/* Color Control */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
@@ -367,9 +363,16 @@ function App() {
                     </div>
                   </div>
                 </div>
-              </div>
+                </motion.div>
             ) : (
-              <div className="space-y-6 text-sm text-slate-300 leading-relaxed">
+              <motion.div
+                key="presets"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4 text-sm text-slate-300 leading-relaxed"
+              >
                 <div>
                   <h4 className="font-semibold text-slate-100 mb-2">Preset Configurations</h4>
                   <div className="grid grid-cols-2 gap-3">
@@ -401,8 +404,9 @@ function App() {
                     <li><strong>Dynamic Uniforms:</strong> JavaScript feeds mouse coordinates, aspect ratios, and configuration values into the WebGL program in real time.</li>
                   </ul>
                 </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </main>
