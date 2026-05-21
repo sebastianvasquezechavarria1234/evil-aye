@@ -78,10 +78,10 @@ function App() {
       {/* Main Workspace */}
       <main className="flex-grow w-full grid grid-cols-1 lg:grid-cols-12 items-stretch z-10 overflow-hidden">
         {/* Left - Interactive Viewer */}
-        <div className="lg:col-span-9 flex flex-col p-6 relative min-h-0 justify-between">
+        <div className="lg:col-span-9 flex flex-col relative min-h-0 justify-between">
 
           {/* Interactive Container holding EvilEye component */}
-          <div className="w-full flex-grow relative flex items-center justify-center rounded-xl overflow-hidden my-8">
+          <div className="w-full flex-grow relative flex items-center justify-center overflow-hidden my-8">
             <div className="absolute top-4 left-4 z-20">
               <span className="text-xs font-mono uppercase bg-black/80 border border-zinc-800 px-3 py-1.5 rounded-full text-zinc-400 backdrop-blur-md">
                 GL Canvas Live Preview
