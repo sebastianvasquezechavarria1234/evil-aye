@@ -148,7 +148,7 @@ function App() {
               </div>
               <button 
                 onClick={resetCurrentPreset}
-                className="hover:text-cyan-400 text-[10px] font-medium transition-colors cursor-pointer px-2.5 py-1 rounded bg-zinc-900/60 border border-zinc-800 hover:border-cyan-500/30 backdrop-blur-md pointer-events-auto"
+                className="hover:text-white/80 text-[10px] font-medium transition-colors cursor-pointer px-2.5 py-1 rounded bg-zinc-900/60 border border-zinc-800 hover:border-cyan-500/30 backdrop-blur-md pointer-events-auto"
               >
                 Reset Preset
               </button>
@@ -178,11 +178,6 @@ function App() {
             <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
           </div>
 
-          {/* Bottom Bar inside Play Area */}
-          <div className="flex justify-between items-center text-[10px] text-zinc-500 border-t border-zinc-900/60 px-4 py-3 bg-zinc-950/60 shrink-0">
-            <p>Move mouse over the canvas to interact with the pupil</p>
-            <p className="font-mono">OGL WebGL Renderer</p>
-          </div>
         </div>
 
         {/* Right - Premium Glassmorphic Sidebar */}
@@ -320,7 +315,7 @@ function App() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
                         <label className="text-[11px] font-medium text-zinc-400">Talisman Scale</label>
-                        <span className="text-[10px] font-mono text-cyan-400">{params.scale.toFixed(2)}</span>
+                        <span className="text-[10px] font-mono text-white/80">{params.scale.toFixed(2)}</span>
                       </div>
                       <input
                         type="range"
@@ -329,7 +324,7 @@ function App() {
                         step="0.05"
                         value={params.scale}
                         onChange={(e) => updateParam('scale', Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white/80"
                       />
                     </div>
 
@@ -337,7 +332,7 @@ function App() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
                         <label className="text-[11px] font-medium text-zinc-400">Light Intensity</label>
-                        <span className="text-[10px] font-mono text-cyan-400">{params.intensity.toFixed(2)}</span>
+                        <span className="text-[10px] font-mono text-white/80">{params.intensity.toFixed(2)}</span>
                       </div>
                       <input
                         type="range"
@@ -346,7 +341,7 @@ function App() {
                         step="0.1"
                         value={params.intensity}
                         onChange={(e) => updateParam('intensity', Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white/80"
                       />
                     </div>
 
@@ -354,7 +349,7 @@ function App() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
                         <label className="text-[11px] font-medium text-zinc-400">Pupil Size</label>
-                        <span className="text-[10px] font-mono text-cyan-400">{params.pupilSize.toFixed(2)}</span>
+                        <span className="text-[10px] font-mono text-white/80">{params.pupilSize.toFixed(2)}</span>
                       </div>
                       <input
                         type="range"
@@ -363,7 +358,7 @@ function App() {
                         step="0.05"
                         value={params.pupilSize}
                         onChange={(e) => updateParam('pupilSize', Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white/80"
                       />
                     </div>
 
@@ -371,7 +366,7 @@ function App() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
                         <label className="text-[11px] font-medium text-zinc-400">Iris Width</label>
-                        <span className="text-[10px] font-mono text-cyan-400">{params.irisWidth.toFixed(2)}</span>
+                        <span className="text-[10px] font-mono text-white/80">{params.irisWidth.toFixed(2)}</span>
                       </div>
                       <input
                         type="range"
@@ -380,7 +375,7 @@ function App() {
                         step="0.01"
                         value={params.irisWidth}
                         onChange={(e) => updateParam('irisWidth', Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white/80"
                       />
                     </div>
 
@@ -388,7 +383,7 @@ function App() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
                         <label className="text-[11px] font-medium text-zinc-400">Glow Intensity</label>
-                        <span className="text-[10px] font-mono text-cyan-400">{params.glowIntensity.toFixed(2)}</span>
+                        <span className="text-[10px] font-mono text-white/80">{params.glowIntensity.toFixed(2)}</span>
                       </div>
                       <input
                         type="range"
@@ -397,7 +392,7 @@ function App() {
                         step="0.05"
                         value={params.glowIntensity}
                         onChange={(e) => updateParam('glowIntensity', Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white/80"
                       />
                     </div>
 
@@ -405,7 +400,7 @@ function App() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
                         <label className="text-[11px] font-medium text-zinc-400">Flame Speed</label>
-                        <span className="text-[10px] font-mono text-cyan-400">{params.flameSpeed.toFixed(2)}</span>
+                        <span className="text-[10px] font-mono text-white/80">{params.flameSpeed.toFixed(2)}</span>
                       </div>
                       <input
                         type="range"
@@ -414,7 +409,7 @@ function App() {
                         step="0.1"
                         value={params.flameSpeed}
                         onChange={(e) => updateParam('flameSpeed', Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white/80"
                       />
                     </div>
 
@@ -422,7 +417,7 @@ function App() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
                         <label className="text-[11px] font-medium text-zinc-400">Noise Distortion</label>
-                        <span className="text-[10px] font-mono text-cyan-400">{params.noiseScale.toFixed(2)}</span>
+                        <span className="text-[10px] font-mono text-white/80">{params.noiseScale.toFixed(2)}</span>
                       </div>
                       <input
                         type="range"
@@ -431,7 +426,7 @@ function App() {
                         step="0.1"
                         value={params.noiseScale}
                         onChange={(e) => updateParam('noiseScale', Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white/80"
                       />
                     </div>
 
@@ -439,7 +434,7 @@ function App() {
                     <div className="space-y-1.5">
                       <div className="flex justify-between">
                         <label className="text-[11px] font-medium text-zinc-400">Cursor Pupil Follow</label>
-                        <span className="text-[10px] font-mono text-cyan-400">{params.pupilFollow.toFixed(2)}</span>
+                        <span className="text-[10px] font-mono text-white/80">{params.pupilFollow.toFixed(2)}</span>
                       </div>
                       <input
                         type="range"
@@ -448,7 +443,7 @@ function App() {
                         step="0.1"
                         value={params.pupilFollow}
                         onChange={(e) => updateParam('pupilFollow', Number(e.target.value))}
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white/80"
                       />
                     </div>
 
@@ -489,6 +484,12 @@ function App() {
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
+
+          {/* Bottom Info */}
+          <div className="flex flex-col gap-0.5 text-left text-[10px] text-zinc-500 shrink-0">
+            <p>Move mouse over the canvas to interact with the pupil</p>
+            <p className="font-mono">OGL WebGL Renderer</p>
           </div>
 
           <div className="h-px bg-zinc-800/60" />
