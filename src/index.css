@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Google Sans Flex";
+  font-style: normal;
+  font-weight: 1 1000;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("./fonts/GoogleSansFlex.woff2") format("woff2");
+}
+
 .google-sans-flex {
   font-family: "Google Sans Flex", sans-serif;
   font-optical-sizing: auto;
