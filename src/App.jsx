@@ -173,21 +173,6 @@ function App() {
             {/* Grid Effect Background Overlay */}
             <div className="absolute inset-0 border border-cyan-500/5 pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
 
-            {/* Help Indicator (Fades on hover) */}
-            <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center gap-3 transition-opacity duration-500 group-hover:opacity-0">
-              <div className="w-12 h-12 rounded-full border border-white/20 bg-white/10 flex items-center justify-center animate-bounce">
-                <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                </svg>
-              </div>
-              <p className="text-gray-400 text-sm font-light">
-                Move your mouse or swipe to interact
-              </p>
-              <span className="text-[10px] text-zinc-600 bg-zinc-900/50 px-2 py-1 rounded-full border border-zinc-800/30">
-                Procedural Eye Canvas
-              </span>
-            </div>
-
             {/* Neon Border Highlights */}
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
             <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
